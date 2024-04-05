@@ -2,6 +2,8 @@
 // src/Service/ScheduleService.php
 namespace App\Service;
 
+use App\Entity\Inspector;
+use App\Entity\Job;
 use App\Entity\Schedule;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\InspectorService;
@@ -52,17 +54,34 @@ class ScheduleService
         return $this->serializeSchedule($schedule);
     }
 
-    public function createSchedule(array $data): Schedule
+    public function addSchedule(int $jobId, Inspector $inspector): ?string
     {
+        $job = $this->entityManager->getRepository(Job::class)->find($jobId);
+
+        // Check if job status allows scheduling
+        if ($job->getStatus() !== 'To Do') {
+            return 'Job is already assigned to another inspector';
+        }
+
+        // print_r($job->getInspector());exit;
+        // Create a new schedule
         $schedule = new Schedule();
-        // Populate $schedule with data from $data array
-        // Example: $schedule->setInspector($data['inspector']);
-        // Set other properties similarly
-        
+        $schedule->setJob($job);
+        $schedule->setInspector($inspector);
+        $schedule->setAssignedAt(new \DateTime());
+
         $this->entityManager->persist($schedule);
         $this->entityManager->flush();
 
-        return $schedule;
+        // Update job status to "In Progress"
+        $job->setStatus('In Progress');
+        // Update job inspector
+        // $job->setInspector($inspector);
+
+        $this->entityManager->persist($job);
+        $this->entityManager->flush();
+
+        return null; // Schedule added successfully, no error message
     }
 
     public function updateSchedule(int $id, array $data): ?array
@@ -77,12 +96,39 @@ class ScheduleService
         return $schedule;
     }
 
-    public function deleteSchedule(int $id): void
+    public function deleteSchedule(int $id): ?String
     {
+        
         $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
 
+        if (!$schedule) {
+            return 'Schedule not found';
+        }
+
+        // Check if schedule is completed
+        if ($schedule->getCompletedAt() !== null) {
+            return 'Cannot delete completed schedule';
+        }
+
+        // Check if related job status is "Completed"
+        $job = $schedule->getJob();
+        if ($job && $job->getStatus() === "Completed") {
+            return 'Cannot delete schedule associated with a completed job';
+        }
+
+        // Delete the schedule
         $this->entityManager->remove($schedule);
         $this->entityManager->flush();
+
+        // Update job status to "To Do"
+        if ($job) {
+            $job->setStatus("To Do");
+            $job->setInspector(null);
+            $this->entityManager->persist($job);
+            $this->entityManager->flush();
+        }
+
+        return 'Deleted Successfully';
     }
 }
 
