@@ -1,5 +1,5 @@
 <?php
-// src/Service/ScheduleService.php
+
 namespace App\Service;
 
 use App\Entity\Inspector;
@@ -8,6 +8,8 @@ use App\Entity\Schedule;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\InspectorService;
 use App\Service\JobService;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ScheduleService
 {
@@ -63,7 +65,8 @@ class ScheduleService
             return 'Job is already assigned to another inspector';
         }
 
-        // print_r($job->getInspector());exit;
+
+        $this->entityManager->persist($job);
         // Create a new schedule
         $schedule = new Schedule();
         $schedule->setJob($job);
@@ -76,7 +79,6 @@ class ScheduleService
         // Update job status to "In Progress"
         $job->setStatus('In Progress');
         // Update job inspector
-        // $job->setInspector($inspector);
 
         $this->entityManager->persist($job);
         $this->entityManager->flush();
@@ -84,18 +86,17 @@ class ScheduleService
         return null; // Schedule added successfully, no error message
     }
 
+
     public function completeJob(int $id, array $data = []): ?Schedule
     {
         $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
-
-
-
-        // if (!$schedule) {
-        //     return 'Schedule not found';
-        // }
         
         $job = $schedule->getJob();
-        $inspector = $schedule->getInspector();
+        $inspector = $schedule->getInspector(); 
+
+        if(!$this->isJobInProgressAndBelongsToInspector($job, $inspector, $data)){
+            return null;
+        }
 
         $job->setStatus('Completed');
 
@@ -103,6 +104,16 @@ class ScheduleService
 
         return $updatedSchedule;
     
+    }
+
+    private function isJobInProgressAndBelongsToInspector(Job $job, Inspector $inspector, array $data): bool
+    {
+        
+        if($job->getStatus() == 'In Progress' && $inspector->getId() == $data['inspector_id']){
+            return true;
+        }
+
+        return false;
     }
 
 

@@ -7,21 +7,26 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Inspector;
+use Faker\Factory;
 
 class InspectorFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        // Create and persist instances of Inspector entity with seed data
-        $inspector1 = new Inspector();
-        $inspector1->setName('John Doe');
-        $manager->persist($inspector1);
+        
+        $faker = Factory::create();
+        $inspectorLocation = ['Spain', 'Mexico', 'India'];
 
-        $inspector2 = new Inspector();
-        $inspector2->setName('Jane Smith');
-        $manager->persist($inspector2);
+        for ($i = 0; $i < 10; $i++) {
+            $inspector = new Inspector();
+            $inspector->setName($faker->name);
+            $inspector->setEmail($faker->email);
+            $inspector->setPhoneNumber($faker->phoneNumber);
+            $inspector->setLocation($inspectorLocation[array_rand($inspectorLocation)]);
+            $manager->persist($inspector);
+        }
 
-        // Flush the changes to the database
+        // Flush all persisted objects
         $manager->flush();
     }
 }

@@ -20,6 +20,8 @@ class JobController extends AbstractController
     
 
     /**
+     * Get all jobs
+     * 
      * @Route("api/jobs", name="job_index", methods={"GET"})
      */
     public function index(): JsonResponse
@@ -29,6 +31,7 @@ class JobController extends AbstractController
     }
 
     /**
+
      * @Route("api/jobs", name="job_create", methods={"POST"})
      */
     public function create(Request $request): Response
@@ -92,5 +95,3 @@ class JobController extends AbstractController
     }
 
 }
-
-

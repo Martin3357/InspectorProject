@@ -17,6 +17,8 @@ class InspectorController extends AbstractController
     }
 
     /**
+     * Get all list of inspectors
+     * 
      * @Route("/api/inspectors", name="get_inspectors", methods={"GET"})
      */
     public function getInspectors(): JsonResponse
@@ -26,6 +28,8 @@ class InspectorController extends AbstractController
     }
 
     /**
+     * Get inspector by id
+     * 
      * @Route("/api/inspectors/{id}", name="api_get_inspector", methods={"GET"})
      */
     public function getInspector(int $id): JsonResponse
