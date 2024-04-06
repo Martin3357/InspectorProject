@@ -43,7 +43,7 @@ class JobService
     {
         $job = new Job();
         $job->setDescription($data['description']);
-        $job->setStatus($data['status']);
+        $job->setStatus($data['status'] ?? 'To Do');
 
         $this->entityManager->persist($job);
         $this->entityManager->flush();

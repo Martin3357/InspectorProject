@@ -1,7 +1,5 @@
 <?php
 
-// src/Entity/Inspector.php
-
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -32,6 +30,11 @@ class Inspector
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private  $phoneNumber;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $location;
 
     public function getId(): int
     {
@@ -74,5 +77,19 @@ class Inspector
     public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
+    }
+
+    
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?string $location): self
+    {
+        $this->location = $location;
+
+        return $this;
     }
 }

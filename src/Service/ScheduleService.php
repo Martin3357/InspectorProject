@@ -46,7 +46,7 @@ class ScheduleService
 
     public function getScheduleById(int $id): ?array
     {
-        // return $this->entityManager->getRepository(Schedule::class)->find($id);
+
         $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
         if (!$schedule) {
             return null;
@@ -68,7 +68,7 @@ class ScheduleService
         $schedule = new Schedule();
         $schedule->setJob($job);
         $schedule->setInspector($inspector);
-        $schedule->setAssignedAt(new \DateTime());
+        $schedule->setAssignedAt($this->setTimezone($inspector, new \Datetime()));
 
         $this->entityManager->persist($schedule);
         $this->entityManager->flush();
@@ -84,18 +84,43 @@ class ScheduleService
         return null; // Schedule added successfully, no error message
     }
 
-    public function updateSchedule(int $id, array $data): ?array
+    public function completeJob(int $id, array $data = []): ?Schedule
     {
-        $schedule = $this->getScheduleById($id);
-        // Update $schedule with data from $data array
-        // Example: $schedule->setInspector($data['inspector']);
-        // Set other properties similarly
+        $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
+
+
+
+        // if (!$schedule) {
+        //     return 'Schedule not found';
+        // }
+        
+        $job = $schedule->getJob();
+        $inspector = $schedule->getInspector();
+
+        $job->setStatus('Completed');
+
+        $updatedSchedule = $this->updateSchedule($id, $data, $inspector);
+
+        return $updatedSchedule;
+    
+    }
+
+
+    public function updateSchedule(int $id, array $data = [], Inspector $inspector): ?Schedule
+    {
+        // $schedule = $this->getScheduleById($id);
+        $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
+
+
+        $schedule->setCompletedAt($this->setTimezone($inspector, new \Datetime()));
+        $schedule->setNote($data['note'] ?? $schedule->getNote());
         
         $this->entityManager->flush();
 
         return $schedule;
     }
 
+    
     public function deleteSchedule(int $id): ?String
     {
         
@@ -123,12 +148,29 @@ class ScheduleService
         // Update job status to "To Do"
         if ($job) {
             $job->setStatus("To Do");
-            $job->setInspector(null);
             $this->entityManager->persist($job);
             $this->entityManager->flush();
         }
 
         return 'Deleted Successfully';
+    }
+
+    private function setTimezone(
+        Inspector $inspector,
+        \DateTime $assignedTime
+    ): \DateTime
+    {
+        $timezone = new \DateTime();
+        $timezone->format('Y-m-d H:i:s');
+        $location = $inspector->getLocation();
+        if ($location == "Spain") {
+            $timezone = $assignedTime->modify('+2 hours');
+        } else if ($location == "Mexico") {
+            $timezone = $assignedTime->modify('-6 hours');
+        } else if ($location == "India") {
+            $timezone = $assignedTime->modify('+5.5 hours');
+        }
+        return $timezone;
     }
 }
 

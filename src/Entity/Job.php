@@ -56,23 +56,6 @@ class Job
         return $this;
     }
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Inspector", inversedBy="jobs")
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $inspector;
-
-    public function getInspector(): ?Inspector
-    {
-        return $this->inspector;
-    }
-
-    public function setInspector(?Inspector $inspector): self
-    {
-        $this->inspector = $inspector;
-
-        return $this;
-    }
     
 }
 

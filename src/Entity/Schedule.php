@@ -38,6 +38,12 @@ class Schedule
      */
     private $completedAt;
 
+    
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $note;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -58,6 +64,11 @@ class Schedule
     public function getJob(): ?Job
     {
         return $this->job;
+    }
+
+    public function getJobId(): ?int
+    {
+        return $this->getJob()->getId();
     }
 
     public function setJob(?Job $job): self
@@ -88,6 +99,18 @@ class Schedule
     {
         $this->completedAt = $completedAt;
 
+        return $this;
+    }
+
+    
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(string $note): self
+    {
+        $this->note = $note;
         return $this;
     }
 }

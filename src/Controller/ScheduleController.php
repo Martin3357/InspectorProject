@@ -21,7 +21,7 @@ class ScheduleController extends AbstractController
     }
 
     /**
-     * @Route("api/schedule", name="app_schedule")
+     * @Route("api/schedule", name="app_schedule", methods={"GET"})
      */
     public function index(): JsonResponse
     {
@@ -41,7 +41,7 @@ class ScheduleController extends AbstractController
     }
 
     /**
-     * @Route("/api/schedule/add", name="add_schedule", methods={"POST"})
+     * @Route("/api/schedule", name="add_schedule", methods={"POST"})
      */
     public function addSchedule(Request $request): JsonResponse
     {
@@ -80,6 +80,16 @@ class ScheduleController extends AbstractController
     public function deleteSchedule(int $id): JsonResponse
     {
         $schedule = $this->scheduleService->deleteSchedule($id);
-        return new JsonResponse(['error'=> $schedule],404);
+        return new JsonResponse(['message'=> $schedule]);
+    }
+
+    /**
+     * @Route("api/schedule/{id}", name="update_schedule", methods={"PUT"})
+     */
+    public function jobCompletion(Request $request, int $id): JsonResponse
+    {
+        $requestData = json_decode($request->getContent(), true);
+        $completed = $this->scheduleService->completeJob($id, $requestData);
+        return $this->json($completed);
     }
 }
