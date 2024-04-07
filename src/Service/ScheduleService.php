@@ -25,6 +25,12 @@ class ScheduleService
         $this->jobService = $jobService; 
     }
 
+    /**
+     * Get all the schedules from the 
+     * database
+     *
+     * @return array
+     */
     public function getAllSchedules(): array
     {
         $schedules = $this->entityManager->getRepository(Schedule::class)->findAll();
@@ -34,6 +40,13 @@ class ScheduleService
         }
         return $responseData;
     }
+
+    /**
+     * Formated data 
+     *
+     * @param Schedule $schedule
+     * @return array
+     */
     private function serializeSchedule(Schedule $schedule): array
     {
         $inspector = $this->inspectorService->getInspectorById($schedule->getInspector()->getId());
@@ -42,10 +55,15 @@ class ScheduleService
             'id' => $schedule->getId(),
             'inspector' => $inspector,
             'job' => $job,
-            // Add other properties as needed
         ];
     }
 
+    /**
+     * Get one schedule by their id
+     *
+     * @param integer $id
+     * @return array|null
+     */
     public function getScheduleById(int $id): ?array
     {
 
@@ -56,6 +74,14 @@ class ScheduleService
         return $this->serializeSchedule($schedule);
     }
 
+    /**
+     * Add a schedule for an inspector
+     * for given job
+     *
+     * @param integer $jobId
+     * @param Inspector $inspector
+     * @return string|null
+     */
     public function addSchedule(int $jobId, Inspector $inspector): ?string
     {
         $job = $this->entityManager->getRepository(Job::class)->find($jobId);
@@ -78,15 +104,21 @@ class ScheduleService
 
         // Update job status to "In Progress"
         $job->setStatus('In Progress');
-        // Update job inspector
 
         $this->entityManager->persist($job);
         $this->entityManager->flush();
 
-        return null; // Schedule added successfully, no error message
+        return null;
     }
 
 
+    /**
+     * Update the schedule set complete and 
+     * change the job status
+     * @param integer $id
+     * @param array $data
+     * @return Schedule|null
+     */
     public function completeJob(int $id, array $data = []): ?Schedule
     {
         $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
@@ -106,6 +138,14 @@ class ScheduleService
     
     }
 
+    /**
+     * Check for the job
+     *
+     * @param Job $job
+     * @param Inspector $inspector
+     * @param array $data
+     * @return boolean
+     */
     private function isJobInProgressAndBelongsToInspector(Job $job, Inspector $inspector, array $data): bool
     {
         
@@ -116,10 +156,17 @@ class ScheduleService
         return false;
     }
 
-
+    /**
+     * Update the schedule and set the note
+     * that are given from the request
+     * @param integer $id
+     * @param array $data
+     * @param Inspector $inspector
+     * @return Schedule|null
+     */
     public function updateSchedule(int $id, array $data = [], Inspector $inspector): ?Schedule
     {
-        // $schedule = $this->getScheduleById($id);
+        
         $schedule = $this->entityManager->getRepository(Schedule::class)->find($id);
 
 
@@ -132,6 +179,11 @@ class ScheduleService
     }
 
     
+    /**
+     * Delete the schedule and change the job status 
+     *
+     * @param integer $id
+     */
     public function deleteSchedule(int $id): ?String
     {
         
@@ -166,6 +218,12 @@ class ScheduleService
         return 'Deleted Successfully';
     }
 
+    /**
+     * Get the timezone by their locations
+     * @param Inspector $inspector
+     * @param \DateTime $assignedTime
+     * @return \DateTime
+     */
     private function setTimezone(
         Inspector $inspector,
         \DateTime $assignedTime

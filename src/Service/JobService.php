@@ -20,6 +20,11 @@ class JobService
         $this->jobRepository = $jobRepository;
     }
 
+    /**
+     * Get all jobs
+     *
+     * @return array
+     */
     public function getAllJobs(): array
     {
         $jobs = $this->entityManager->getRepository(Job::class)->findAll();
@@ -29,16 +34,28 @@ class JobService
         }
         return $responseData;
     }
+
+    /**
+     * Formated data of a Job
+     *
+     * @param Job $job
+     * @return array
+     */
     private function serializeJob(Job $job): array
     {
         return [
             'id' => $job->getId(),
             'description' => $job->getDescription(),
             'status' => $job->getStatus(),
-            // Add other properties as needed
         ];
     }
 
+    /**
+     * Create a Job with the data that are send from
+     * request
+     * @param array $data
+     * @return Job
+     */
     public function createJob(array $data): Job
     {
         $job = new Job();
@@ -51,6 +68,12 @@ class JobService
         return $job;
     }
 
+    /**
+     * Get one job by the id
+     *
+     * @param integer $id
+     * @return array|null
+     */
     public function getJobById(int $id): ?array
     {
         $job =  $this->entityManager->getRepository(Job::class)->find($id);
@@ -60,6 +83,13 @@ class JobService
         return $this->serializeJob($job);
     }
 
+    /**
+     * Update a Job by id
+     *
+     * @param integer $id
+     * @param array $data
+     * @return Job|null
+     */
     public function updateJob(int $id, array $data): ?Job
     {
         $job = $this->entityManager->getRepository(Job::class)->find($id);
@@ -76,6 +106,12 @@ class JobService
         return $job;
     }
 
+    /**
+     * Delete the job
+     *
+     * @param integer $id
+     * @return void
+     */
     public function deleteJob(int $id): void
     {
         $job = $this->entityManager->getRepository(Job::class)->find($id);
@@ -87,6 +123,11 @@ class JobService
     }
 
     
+    /**
+     * Return the jobs by their status
+     *
+     * @param string $status
+     */
     public function getJobsByStatus(string $status)
     {
         $job = $this->jobRepository->findJobByStatus($status);
@@ -97,5 +138,4 @@ class JobService
         return $this->serializeJob($job);
     }
     
-
 }

@@ -14,6 +14,11 @@ class InspectorService
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Return an array of all inspectors from the repository
+     *
+     * @return array
+     */
     public function getAllInspectors(): array
     {
         $inspectors = $this->entityManager->getRepository(Inspector::class)->findAll();
@@ -24,6 +29,12 @@ class InspectorService
         return $responseData;
     }
 
+    /**
+     * Return data of an inspector
+     *
+     * @param integer $id
+     * @return array|null
+     */
     public function getInspectorById(int $id): ?array
     {
         $inspector = $this->entityManager->getRepository(Inspector::class)->find($id);
@@ -33,12 +44,17 @@ class InspectorService
         return $this->serializeInspector($inspector);
     }
 
+    /**
+     * Return formated data of inspector
+     *
+     * @param Inspector $inspector
+     * @return array
+     */
     private function serializeInspector(Inspector $inspector): array
     {
         return [
             'id' => $inspector->getId(),
             'name' => $inspector->getName(),
-            // Add other properties as needed
         ];
     }
 }

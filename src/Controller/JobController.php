@@ -1,5 +1,5 @@
 <?php
-// src/Controller/JobController.php
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +31,7 @@ class JobController extends AbstractController
     }
 
     /**
-
+     * Create a job 
      * @Route("api/jobs", name="job_create", methods={"POST"})
      */
     public function create(Request $request): Response
@@ -43,6 +43,7 @@ class JobController extends AbstractController
     }
 
     /**
+     * Get single job by the id
      * @Route("api/jobs/{id}", name="job_show", methods={"GET"})
      */
     public function show($id): Response
@@ -57,6 +58,7 @@ class JobController extends AbstractController
     }
 
     /**
+     * Update the job
      * @Route("api/jobs/{id}", name="job_update", methods={"PUT"})
      */
     public function update(Request $request, $id): Response
@@ -72,6 +74,7 @@ class JobController extends AbstractController
     }
 
     /**
+     * Delete the job by id
      * @Route("api/jobs/{id}", name="job_delete", methods={"DELETE"})
      */
     public function delete($id): Response
@@ -81,6 +84,7 @@ class JobController extends AbstractController
     }
 
     /**
+     * Get all the jobs by their status
      * @Route("api/jobs/by-status/{status}", name="job_by_status", methods={"GET"})
      */
     public function getByStatus(string $status): JsonResponse

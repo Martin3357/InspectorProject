@@ -1,6 +1,6 @@
 <?php
 
-// src/DataFixtures/JobSeeder.php
+
 namespace App\DataFixtures;
 
 use App\Entity\Job;
